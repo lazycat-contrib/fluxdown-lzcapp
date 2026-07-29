@@ -2,16 +2,15 @@ application:
   subdomain: fluxdown
   background_task: true
   multi_instance: true
-  public_path:
-    - /
   upstreams:
     - location: /
       backend: http://fluxdown-server:17800/
   injects:
     - id: fluxdown-session-only
       on: browser
+      auth_required: true
       when:
-        - /login
+        - "/*"
       do:
         - src: |
             (() => {
@@ -30,8 +29,9 @@ application:
             })();
     - id: fluxdown-token-autofill
       on: browser
+      auth_required: true
       when:
-        - /login
+        - "/*"
       do:
         - src: builtin://simple-inject-password
           params:
