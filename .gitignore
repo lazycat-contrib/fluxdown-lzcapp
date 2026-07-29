@@ -1,0 +1,4 @@
+dist/
+*.lpk
+.lazycat-action/
+.DS_Store

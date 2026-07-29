@@ -1,0 +1,32 @@
+params:
+  - id: token
+    type: secret
+    name: "Access token"
+    description: "FluxDown access token (8-128 ASCII characters, containing at least one letter and one digit)"
+    optional: false
+
+  - id: lang
+    type: string
+    name: "Default language"
+    description: "Default Web UI language: zh or en"
+    default_value: "zh"
+    optional: false
+
+  - id: download_dir_name
+    type: string
+    name: "Download directory"
+    description: "Directory name under the LazyCat user home, without path separators"
+    default_value: "Downloads"
+    optional: false
+
+locales:
+  zh:
+    token:
+      name: "访问密钥"
+      description: "FluxDown 访问密钥（8-128 位 ASCII 字符，必须同时包含字母和数字）"
+    lang:
+      name: "默认语言"
+      description: "Web 界面默认语言：zh（中文）或 en（英文）"
+    download_dir_name:
+      name: "下载保存目录"
+      description: "懒猫用户主目录下的文件夹名称，请勿包含路径分隔符"

@@ -1,0 +1,105 @@
+application:
+  subdomain: fluxdown
+  background_task: true
+  multi_instance: true
+  public_path:
+    - /
+  upstreams:
+    - location: /
+      backend: http://fluxdown-server:17800/
+  injects:
+    - id: fluxdown-session-only
+      on: browser
+      when:
+        - /login
+      do:
+        - src: |
+            (() => {
+              const disableRemember = () => {
+                const checkbox = document.querySelector("label.remember input[type='checkbox']");
+                if (!checkbox) return false;
+                if (checkbox.checked) checkbox.click();
+                return true;
+              };
+              if (disableRemember()) return;
+              const observer = new MutationObserver(() => {
+                if (disableRemember()) observer.disconnect();
+              });
+              observer.observe(document.documentElement, { childList: true, subtree: true });
+              setTimeout(() => observer.disconnect(), 8000);
+            })();
+    - id: fluxdown-token-autofill
+      on: browser
+      when:
+        - /login
+      do:
+        - src: builtin://simple-inject-password
+          params:
+            password: "{{ .U.token }}"
+            allowPasswordOnly: true
+            passwordSelector: "#login-token"
+            autoSubmit: true
+            submitDelayMs: 200
+            retryCount: 20
+            retryIntervalMs: 300
+
+services:
+  fluxdown-server:
+    # upstream: ghcr.io/zerx-lab/fluxdown-server:0.2.5-rc.5
+    image: registry.lazycat.cloud/czyt/zerx-lab/fluxdown-server:b3db301f5093e296
+    environment:
+      - "FLUXDOWN_TOKEN={{ .U.token }}"
+      - "FLUXDOWN_LANG={{ .U.lang }}"
+      - "FLUXDOWN_DATA_DIR=/data"
+      - "FLUXDOWN_DOWNLOAD_DIR={{ .U.download_dir_name }}"
+    binds:
+      - "/lzcapp/var/data:/data"
+      - "/lzcapp/run/mnt/home:/mnt/lazycat-home"
+    setup_script: |
+      set -eu
+
+      token_length="$(printf '%s' "$FLUXDOWN_TOKEN" | wc -c | tr -d ' ')"
+      if [ "$token_length" -lt 8 ] || [ "$token_length" -gt 128 ] ||
+        ! printf '%s' "$FLUXDOWN_TOKEN" | LC_ALL=C grep -Eq '^[!-~]+$' ||
+        ! printf '%s' "$FLUXDOWN_TOKEN" | LC_ALL=C grep -Eq '[A-Za-z]' ||
+        ! printf '%s' "$FLUXDOWN_TOKEN" | LC_ALL=C grep -Eq '[0-9]'; then
+        echo "FLUXDOWN_TOKEN must be 8-128 printable ASCII characters containing letters and digits" >&2
+        exit 1
+      fi
+
+      case "$FLUXDOWN_LANG" in
+        zh|en) ;;
+        *)
+          echo "FLUXDOWN_LANG must be zh or en" >&2
+          exit 1
+          ;;
+      esac
+
+      case "$FLUXDOWN_DOWNLOAD_DIR" in
+        ""|"."|".."|*/*|*\\*)
+          echo "download directory must be a single directory name" >&2
+          exit 1
+          ;;
+      esac
+
+      download_path="/mnt/lazycat-home/$FLUXDOWN_DOWNLOAD_DIR"
+      if [ -L "$download_path" ]; then
+        echo "download directory must not be a symbolic link" >&2
+        exit 1
+      fi
+      mkdir -p -- "$download_path"
+      rm -rf -- /root/Downloads
+      ln -s -- "$download_path" /root/Downloads
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -fsS http://127.0.0.1:17800/ping || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+ext_config:
+  enable_document_access: true
+
+usage: "安装时设置访问密钥、界面语言和下载目录。打开应用后将自动使用部署密钥登录；应用数据使用内置 SQLite 持久化，不连接外部数据库。"

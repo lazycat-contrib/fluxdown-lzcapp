@@ -1,0 +1,72 @@
+name: Publish stable LazyCat LPK
+
+on:
+  schedule:
+    - cron: "23 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.version.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: version
+        name: Check for a compatible stable image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          registry_token="$(
+            curl -fsSL 'https://ghcr.io/token?service=ghcr.io&scope=repository%3Azerx-lab%2Ffluxdown-server%3Apull' |
+              jq -r '.token'
+          )"
+          latest="$(
+            curl -fsSL -H "Authorization: Bearer ${registry_token}" 'https://ghcr.io/v2/zerx-lab/fluxdown-server/tags/list?n=1000' |
+              jq -r '.tags[]?' |
+              awk '/^[0-9]+\.[0-9]+\.[0-9]+$/' |
+              sort -V |
+              tail -n 1
+          )"
+          current="$(
+            awk '$1 == "version:" { gsub(/"/, "", $2); print $2; exit }' package.yml
+          )"
+
+          if ! [[ "${current}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid LazyCat package version: ${current}" >&2
+            exit 1
+          fi
+
+          ready=false
+          if [[ -n "${latest}" ]]; then
+            highest="$(printf '%s\n%s\n' "${current}" "${latest}" | sort -V | tail -n 1)"
+            if [[ "${highest}" == "${latest}" ]]; then
+              ready=true
+            fi
+          fi
+
+          echo "ready=${ready}" >> "${GITHUB_OUTPUT}"
+          echo "Current LazyCat version: ${current}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "Latest stable upstream image: ${latest:-none}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "Run reusable publisher: ${ready}" >> "${GITHUB_STEP_SUMMARY}"
+
+  lazycat:
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
+    uses: ca-x/lazycat-github-action/.github/workflows/lazycat.yml@v1
+    with:
+      operation: auto
+      config: .github/lazycat-action.yml
+      versioned-release-asset: true
+    secrets:
+      LAZYCAT_TOKEN: ${{ secrets.LAZYCAT_TOKEN }}
+      APPSTORE_URL: ${{ secrets.APPSTORE_URL }}
+      APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
+      APP_ID: ${{ secrets.APP_ID }}
+      PRIVATE_STORE_GROUP_CODES: ${{ secrets.PRIVATE_STORE_GROUP_CODES }}

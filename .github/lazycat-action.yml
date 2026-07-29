@@ -1,0 +1,52 @@
+version: 1
+
+project:
+  root: .
+  build_config: lzc-build.yml
+  package_file: package.yml
+  output: dist/fluxdown.lpk
+  target_arch: amd64
+
+update:
+  strategy: publish
+  allow_downgrade: false
+  version_source:
+    type: image
+    image: fluxdown-server
+
+build:
+  toolchains: []
+  run_buildscript: false
+
+images:
+  - id: fluxdown-server
+    target: service
+    service: fluxdown-server
+    source: ghcr.io/zerx-lab/fluxdown-server
+    channel: stable
+    delivery:
+      mode: lazycat
+
+stores:
+  official:
+    enabled: true
+    skip_if_version_exists: true
+    create_if_missing: true
+    changelog_locales:
+      - zh
+      - en
+    retry:
+      enabled: false
+      max_attempts: 3
+      initial_delay: 2s
+      max_delay: 30s
+    application:
+      language: zh
+      name: FluxDown
+      source: https://github.com/zerx-lab/FluxDown
+      source_author: zerx-lab
+  private:
+    enabled: true
+    skip_if_version_exists: true
+    name: FluxDown
+    summary: "FluxDown LazyCat LPK release"
