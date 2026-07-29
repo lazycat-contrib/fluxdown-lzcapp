@@ -34,7 +34,6 @@ lzc-cli lpk info dist/fluxdown.lpk
 
 ## 自动发布
 
-- 推送 `v0.2.4` Tag：构建初始版本、创建版本化 GitHub Release Asset，并向私有/官方商店发布。
 - 每日稳定版检查：只接受 `X.Y.Z` 形式的正式镜像标签；发现新版本后复制镜像、更新 LPK、创建 GitHub Release，并同步双商店。
 
 GitHub Actions 需要以下 Secrets：
