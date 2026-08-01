@@ -1,12 +1,11 @@
 package: community.lazycat.app.fluxdown
-version: 0.2.4
+version: 0.3.0
 name: FluxDown
 description: Rust 驱动的多协议下载管理器，提供 Web UI、REST API 与 WebSocket 实时推送。
 min_os_version: "1.5.0"
 homepage: https://github.com/zerx-lab/FluxDown
 author: zerx-lab
 license: AGPL-3.0
-
 locales:
   zh:
     name: "FluxDown"
@@ -14,7 +13,6 @@ locales:
   en:
     name: "FluxDown"
     description: "A Rust-powered multi-protocol download manager with a Web UI, REST API, and WebSocket updates."
-
 permissions:
   required:
     - net.internet

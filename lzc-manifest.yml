@@ -42,11 +42,10 @@ application:
             submitDelayMs: 200
             retryCount: 20
             retryIntervalMs: 300
-
 services:
   fluxdown-server:
-    # upstream: ghcr.io/zerx-lab/fluxdown-server:0.2.5-rc.5
-    image: registry.lazycat.cloud/czyt/zerx-lab/fluxdown-server:b3db301f5093e296
+    # upstream: ghcr.io/zerx-lab/fluxdown-server:0.3.0
+    image: registry.lazycat.cloud/czyt/zerx-lab/fluxdown-server:dac2921d54792b0b
     environment:
       - "FLUXDOWN_TOKEN={{ .U.token }}"
       - "FLUXDOWN_LANG={{ .U.lang }}"
@@ -98,8 +97,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-
 ext_config:
   enable_document_access: true
-
 usage: "安装时设置访问密钥、界面语言和下载目录。打开应用后将自动使用部署密钥登录；应用数据使用内置 SQLite 持久化，不连接外部数据库。"
