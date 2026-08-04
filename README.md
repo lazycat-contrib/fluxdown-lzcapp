@@ -23,12 +23,9 @@
 - `/lzcapp/var/data` → 容器 `/data`：数据库、日志与服务配置。
 - `/lzcapp/run/mnt/home` → 容器 `/mnt/lazycat-home`：启动脚本验证目录名称后，将选定目录链接到 `/root/Downloads`。
 
-## 本地构建
+## 构建说明
 
-```bash
-lzc-cli project release -o dist/fluxdown.lpk
-lzc-cli lpk info dist/fluxdown.lpk
-```
+当前运行镜像使用 `ghcr.1ms.run` mirror 地址，请通过本仓库的 LazyCat GitHub Action 构建 LPK。`lzc-cli 2.0.9 project release` 会按官方商店规则拒绝非 `registry.lazycat.cloud` 镜像，不能用于此私有商店配置。
 
 ## 自动发布
 
