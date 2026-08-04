@@ -5,12 +5,10 @@
 ## 当前版本
 
 - 软件包 ID：`community.lazycat.app.fluxdown`
-- LazyCat 包版本：`0.2.4`
-- 运行镜像：`ghcr.io/zerx-lab/fluxdown-server:0.2.5-rc.5`
+- LazyCat 包版本：`0.3.1`
+- 运行镜像：`ghcr.1ms.run/zerx-lab/fluxdown-server:0.3.1`
 - 运行架构：`linux/amd64`
 - 数据库：内置 SQLite，不使用外部数据库
-
-之所以使用纯数字包版本 `0.2.4`，是因为 LazyCat 包版本不使用预发布后缀。上游正式发布 `0.2.5` 后，自动化会切换到正式镜像并升级 LPK 到 `0.2.5`。
 
 ## 部署参数
 
@@ -34,11 +32,10 @@ lzc-cli lpk info dist/fluxdown.lpk
 
 ## 自动发布
 
-- 每日稳定版检查：只接受 `X.Y.Z` 形式的正式镜像标签；发现新版本后复制镜像、更新 LPK、创建 GitHub Release，并同步双商店。
+- 每日稳定版检查：只接受 `X.Y.Z` 形式的正式镜像标签；发现新版本后通过 `ghcr.1ms.run` 镜像加速地址更新 LPK、创建 GitHub Release，并仅同步到喵喵商店。
 
 GitHub Actions 需要以下 Secrets：
 
-- `LAZYCAT_TOKEN`
 - `APPSTORE_URL`
 - `APPSTORE_TOKEN`
 - `APP_ID`（可选）

@@ -25,26 +25,13 @@ images:
     source: ghcr.io/zerx-lab/fluxdown-server
     channel: stable
     delivery:
-      mode: lazycat
+      mode: mirror
+      image_template: ghcr.1ms.run/zerx-lab/fluxdown-server:{tag}
+      require_digest_match: true
 
 stores:
   official:
-    enabled: true
-    skip_if_version_exists: true
-    create_if_missing: true
-    changelog_locales:
-      - zh
-      - en
-    retry:
-      enabled: false
-      max_attempts: 3
-      initial_delay: 2s
-      max_delay: 30s
-    application:
-      language: zh
-      name: FluxDown
-      source: https://github.com/zerx-lab/FluxDown
-      source_author: zerx-lab
+    enabled: false
   private:
     enabled: true
     skip_if_version_exists: true
