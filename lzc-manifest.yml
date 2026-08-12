@@ -44,8 +44,8 @@ application:
             retryIntervalMs: 300
 services:
   fluxdown-server:
-    # upstream: ghcr.io/zerx-lab/fluxdown-server:0.3.2
-    image: ghcr.1ms.run/zerx-lab/fluxdown-server:0.3.2
+    # upstream: ghcr.io/zerx-lab/fluxdown-server:0.4.1
+    image: ghcr.1ms.run/zerx-lab/fluxdown-server:0.4.1
     environment:
       - "FLUXDOWN_TOKEN={{ .U.token }}"
       - "FLUXDOWN_LANG={{ .U.lang }}"

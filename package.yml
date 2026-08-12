@@ -1,5 +1,5 @@
 package: community.lazycat.app.fluxdown
-version: 0.3.2
+version: 0.4.1
 name: FluxDown
 description: Rust 驱动的多协议下载管理器，提供 Web UI、REST API 与 WebSocket 实时推送。
 min_os_version: "1.5.0"
