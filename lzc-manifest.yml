@@ -54,7 +54,7 @@ services:
     binds:
       - "/lzcapp/var/data:/data"
 {{ with (default "Downloads" .U.download_dir_name) }}
-      - {{ if or (eq . ".") (eq . "..") (contains "/" .) (contains "\\" .) (contains ":" .) (contains "$" .) (contains "\n" .) (contains "\r" .) }}{{ fail "download_dir_name must be a single directory name, not a path" }}{{ end }}/lzcapp/documents/{{ $.S.DeployUID }}/{{ . }}:/root/Downloads
+      - '{{ if or (eq . ".") (eq . "..") (contains "/" .) (contains "\\" .) (contains ":" .) (contains "$" .) (contains "\n" .) (contains "\r" .) }}{{ fail "download_dir_name must be a single directory name, not a path" }}{{ end }}/lzcapp/documents/{{ $.S.DeployUID }}/{{ . }}:/root/Downloads'
 {{ end }}
     setup_script: |
       set -eu
