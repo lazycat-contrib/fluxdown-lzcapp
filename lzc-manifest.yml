@@ -47,13 +47,15 @@ services:
     # upstream: ghcr.io/zerx-lab/fluxdown-server:0.6.7
     image: ghcr.1ms.run/zerx-lab/fluxdown-server:0.6.7
     environment:
-      - "FLUXDOWN_TOKEN={{ .U.token }}"
-      - "FLUXDOWN_LANG={{ .U.lang }}"
-      - "FLUXDOWN_DATA_DIR=/data"
-      - "FLUXDOWN_DOWNLOAD_DIR={{ .U.download_dir_name }}"
+      - FLUXDOWN_TOKEN={{ .U.token }}
+      - FLUXDOWN_LANG={{ .U.lang }}
+      - FLUXDOWN_DATA_DIR=/data
+      - FLUXDOWN_DOWNLOAD_DIR=/root/Downloads
     binds:
       - "/lzcapp/var/data:/data"
-      - "/lzcapp/run/mnt/home:/mnt/lazycat-home"
+{{ with (default "Downloads" .U.download_dir_name) }}
+      - {{ if or (eq . ".") (eq . "..") (contains "/" .) (contains "\\" .) (contains ":" .) (contains "$" .) (contains "\n" .) (contains "\r" .) }}{{ fail "download_dir_name must be a single directory name, not a path" }}{{ end }}/lzcapp/documents/{{ $.S.DeployUID }}/{{ . }}:/root/Downloads
+{{ end }}
     setup_script: |
       set -eu
 
@@ -81,14 +83,6 @@ services:
           ;;
       esac
 
-      download_path="/mnt/lazycat-home/$FLUXDOWN_DOWNLOAD_DIR"
-      if [ -L "$download_path" ]; then
-        echo "download directory must not be a symbolic link" >&2
-        exit 1
-      fi
-      mkdir -p -- "$download_path"
-      rm -rf -- /root/Downloads
-      ln -s -- "$download_path" /root/Downloads
     healthcheck:
       test:
         - CMD-SHELL
@@ -99,4 +93,3 @@ services:
       start_period: 10s
 ext_config:
   enable_document_access: true
-usage: "安装时设置访问密钥、界面语言和下载目录。打开应用后将自动使用部署密钥登录；应用数据使用内置 SQLite 持久化，不连接外部数据库。"

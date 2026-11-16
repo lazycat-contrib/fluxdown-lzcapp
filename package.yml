@@ -15,6 +15,7 @@ locales:
     description: "A Rust-powered multi-protocol download manager with a Web UI, REST API, and WebSocket updates."
 permissions:
   required:
+    - document.private
     - net.internet
     - document.read
     - document.write
