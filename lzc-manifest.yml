@@ -44,8 +44,8 @@ application:
             retryIntervalMs: 300
 services:
   fluxdown-server:
-    # upstream: ghcr.io/zerx-lab/fluxdown-server:0.6.7
-    image: ghcr.1ms.run/zerx-lab/fluxdown-server:0.6.7
+    # upstream: ghcr.io/zerx-lab/fluxdown-server:0.6.8
+    image: ghcr.1ms.run/zerx-lab/fluxdown-server:0.6.8
     environment:
       - FLUXDOWN_TOKEN={{ .U.token }}
       - FLUXDOWN_LANG={{ .U.lang }}
@@ -75,9 +75,6 @@ services:
           exit 1
           ;;
       esac
-
-
-
     healthcheck:
       test:
         - CMD-SHELL
