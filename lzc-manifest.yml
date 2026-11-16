@@ -76,12 +76,7 @@ services:
           ;;
       esac
 
-      case "$FLUXDOWN_DOWNLOAD_DIR" in
-        ""|"."|".."|*/*|*\\*)
-          echo "download directory must be a single directory name" >&2
-          exit 1
-          ;;
-      esac
+
 
     healthcheck:
       test:
